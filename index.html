@@ -6,26 +6,28 @@
 <title>ForFun81 – News Aggregator</title>
 
 <style>
-html { scroll-behavior: smooth; }
+html{scroll-behavior:smooth}
 
 body{
-  font-family: Arial, sans-serif;
-  background:#0f0f0f;
+  font-family:Arial, sans-serif;
   margin:0;
-  color:#f1f1f1;
+  background:#f4f4f4;
+  color:#111;
 }
 
 header{
-  background:#000;
-  border-bottom:1px solid #222;
-  padding:15px;
+  background:linear-gradient(90deg,#000,#333);
+  color:#fff;
+  padding:15px 20px;
   text-align:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
 }
 
 header h1{
   margin:0;
-  font-size:1.6em;
-  letter-spacing:1px;
+  font-size:1.8em;
 }
 
 nav{
@@ -33,11 +35,10 @@ nav{
 }
 
 nav a{
-  color:#f1f1f1;
-  margin:0 10px;
+  color:#fff;
+  margin:0 15px;
   text-decoration:none;
   font-weight:bold;
-  font-size:0.95em;
 }
 
 nav a:hover{
@@ -47,94 +48,96 @@ nav a:hover{
 section{
   max-width:1100px;
   margin:40px auto;
-  padding:0 15px;
+  padding:0 20px;
 }
 
 h2{
-  border-left:4px solid #fff;
-  padding-left:10px;
-  margin-bottom:20px;
-  font-size:1.4em;
+  color:#000;
 }
 
 .cards-container{
   display:flex;
   flex-wrap:wrap;
-  gap:15px;
+  gap:20px;
 }
 
 .card{
-  width:300px;
-  background:#1a1a1a;
+  background:#fff;
   border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.6);
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  width:300px;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
-  transition:all 0.25s ease;
+  transition:all .3s ease;
 }
 
 .card:hover{
   transform:translateY(-4px);
-  box-shadow:0 8px 20px rgba(0,0,0,0.9);
+  box-shadow:0 6px 15px rgba(0,0,0,.25);
 }
 
 .card img{
   width:100%;
   height:160px;
   object-fit:cover;
-  border-radius:10px 10px 0 0;
-  filter:grayscale(100%);
 }
 
 .card h3{
   font-size:1.05em;
-  margin:12px;
+  margin:15px;
 }
 
 .card p{
-  font-size:0.9em;
-  margin:0 12px 12px 12px;
-  color:#ccc;
+  margin:0 15px 15px;
+  font-size:.9em;
+  color:#444;
 }
 
 .card a{
-  margin:12px;
+  margin:15px;
   align-self:flex-start;
-  background:#fff;
-  color:#000;
+  background:#000;
+  color:#fff;
   text-decoration:none;
-  padding:6px 12px;
-  border-radius:4px;
-  font-size:0.85em;
+  padding:8px 14px;
+  border-radius:5px;
+  font-size:.85em;
   font-weight:bold;
 }
 
 .card a:hover{
-  background:#ddd;
+  background:#333;
 }
 
 .back-top{
   text-align:center;
-  margin:60px 0;
+  margin:60px 0 30px;
 }
 
 .back-top a{
-  color:#fff;
-  text-decoration:none;
   font-weight:bold;
+  text-decoration:none;
+  color:#000;
 }
 
 .back-top a:hover{
   text-decoration:underline;
 }
 
-footer{
-  background:#000;
-  border-top:1px solid #222;
-  padding:30px 15px;
+/* 🔽 CENTERED IMPRESSUM */
+#impressum{
+  max-width:600px;
+  margin:0 auto 40px;
   text-align:center;
-  font-size:0.9em;
-  color:#aaa;
+}
+
+footer{
+  background:linear-gradient(90deg,#000,#333);
+  color:#fff;
+  text-align:center;
+  padding:25px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -191,7 +194,7 @@ Germany
 </p>
 <p>
 All content belongs to the respective owners.<br>
-This website aggregates publicly available RSS feeds.
+RSS aggregation only.
 </p>
 </section>
 
@@ -200,57 +203,45 @@ This website aggregates publicly available RSS feeds.
 </footer>
 
 <script>
-const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
-const MAX_ITEMS = 10;
+const RSS2JSON="https://api.rss2json.com/v1/api.json?rss_url=";
+const MAX_ITEMS=10;
 
-const FEEDS = {
-  games: ['https://www.gamesradar.com/feeds.xml'],
-  movies: ['https://www.hollywood.com/feed'],
-  tech: ['https://www.tomshardware.com/feeds.xml'],
-  crypto: [
+const FEEDS={
+  games:['https://www.gamesradar.com/feeds.xml'],
+  movies:['https://www.hollywood.com/feed'],
+  tech:['https://www.tomshardware.com/feeds.xml'],
+  crypto:[
     'https://cointelegraph.com/rss',
     'https://www.coindesk.com/tag/rss'
   ],
-  various: ['https://gizmodo.com/feed']
+  various:['https://gizmodo.com/feed']
 };
 
-function loadFeed(category, urls){
-  const container = document.getElementById(category + '-cards');
-  container.innerHTML = '';
-
+function loadFeed(cat,urls){
+  const c=document.getElementById(cat+'-cards');
+  c.innerHTML='';
   Promise.all(
-    urls.map(url =>
-      fetch(RSS2JSON + encodeURIComponent(url))
-        .then(res => res.json())
-        .then(data => data.items || [])
-        .catch(()=>[])
-    )
-  ).then(results=>{
-    const items = results.flat()
-      .sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate))
-      .slice(0, MAX_ITEMS);
-
-    if(items.length === 0){
-      container.innerHTML = '<p>No articles available.</p>';
-      return;
-    }
-
-    items.forEach(item=>{
-      const img = item.enclosure?.link || item.thumbnail || '';
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        ${img ? `<img src="${img}">` : ''}
-        <h3>${item.title}</h3>
-        <p>${item.description ? item.description.replace(/<[^>]*>/g,'').slice(0,140)+'...' : ''}</p>
-        <a href="${item.link}" target="_blank">Read More</a>
-      `;
-      container.appendChild(card);
-    });
+    urls.map(u=>fetch(RSS2JSON+encodeURIComponent(u))
+      .then(r=>r.json()).then(d=>d.items||[]).catch(()=>[]))
+  ).then(res=>{
+    res.flat()
+      .sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate))
+      .slice(0,MAX_ITEMS)
+      .forEach(i=>{
+        const img=i.enclosure?.link||i.thumbnail||'';
+        const el=document.createElement('div');
+        el.className='card';
+        el.innerHTML=`
+          ${img?`<img src="${img}">`:''}
+          <h3>${i.title}</h3>
+          <p>${i.description?i.description.replace(/<[^>]*>/g,'').slice(0,140)+'…':''}</p>
+          <a href="${i.link}" target="_blank">Read More</a>`;
+        c.appendChild(el);
+      });
   });
 }
 
-Object.keys(FEEDS).forEach(cat => loadFeed(cat, FEEDS[cat]));
+Object.keys(FEEDS).forEach(k=>loadFeed(k,FEEDS[k]));
 </script>
 
 </body>
