@@ -50,6 +50,20 @@ h2 {
     color: #0073e6;
     margin-bottom: 10px;
 }
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+ul li {
+    margin-bottom: 8px;
+}
+ul li a {
+    color: #0073e6;
+    text-decoration: none;
+}
+ul li a:hover {
+    text-decoration: underline;
+}
 </style>
 </head>
 <body>
@@ -82,9 +96,62 @@ h2 {
 
 <section id="crypto">
 <h2>Crypto News</h2>
-<!-- Replace YOUR_WIDGET_ID with your Feedwind widget ID -->
-<script type="text/javascript" src="https://feed.mikle.com/js/fw-loader.js" data-fw-param="YOUR_WIDGET_ID"></script>
+<ul id="crypto-list">
+  <li>Loading news...</li>
+</ul>
 </section>
+
+<script>
+// CONFIG
+const rssURL = 'https://cointelegraph.com/rss';
+const apiURL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssURL)}`;
+const CACHE_KEY = 'cryptoNewsCache';
+const CACHE_TIME = 30 * 60 * 1000; // 30 minutes
+
+function loadCryptoNews() {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if(cached) {
+        const obj = JSON.parse(cached);
+        const now = new Date().getTime();
+        if(now - obj.time < CACHE_TIME) {
+            renderNews(obj.items);
+            return; // use cached
+        }
+    }
+
+    fetch(apiURL)
+    .then(response => response.json())
+    .then(data => {
+        const items = data.items.slice(0, 10); // prvih 10
+        localStorage.setItem(CACHE_KEY, JSON.stringify({time: new Date().getTime(), items: items}));
+        renderNews(items);
+    })
+    .catch(err => {
+        console.error('Error loading RSS feed', err);
+        document.getElementById('crypto-list').innerHTML = '<li>Could not load Crypto News.</li>';
+    });
+}
+
+function renderNews(items) {
+    const list = document.getElementById('crypto-list');
+    list.innerHTML = ''; // clear old
+    items.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${item.link}" target="_blank">${item.title}</a>`;
+        list.appendChild(li);
+    });
+}
+
+// initial load
+loadCryptoNews();
+
+// Optional: refresh every CACHE_TIME automatically
+setInterval(() => {
+    localStorage.removeItem(CACHE_KEY); // delete old cache
+    loadCryptoNews();
+}, CACHE_TIME);
+
+</script>
 
 </body>
 </html>
