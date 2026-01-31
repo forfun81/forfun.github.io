@@ -3,50 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ForFun81 News Aggregator</title>
+<title>ForFun81 – News Aggregator</title>
 
 <style>
+html { scroll-behavior: smooth; }
+
 body{
   font-family: Arial, sans-serif;
-  background:#f0f2f5;
+  background:#0f0f0f;
   margin:0;
-  color:#333;
+  color:#f1f1f1;
 }
 
 header{
-  background:linear-gradient(90deg,#0073e6,#00aaff);
-  color:#fff;
-  padding:12px;
+  background:#000;
+  border-bottom:1px solid #222;
+  padding:15px;
   text-align:center;
 }
 
 header h1{
   margin:0;
   font-size:1.6em;
+  letter-spacing:1px;
 }
 
 nav{
-  margin-top:8px;
+  margin-top:10px;
 }
 
 nav a{
-  color:#fff;
-  margin:0 12px;
+  color:#f1f1f1;
+  margin:0 10px;
   text-decoration:none;
   font-weight:bold;
+  font-size:0.95em;
 }
 
-nav a:hover{color:#ffcc00}
+nav a:hover{
+  text-decoration:underline;
+}
 
 section{
-  max-width:1000px;
-  margin:30px auto;
+  max-width:1100px;
+  margin:40px auto;
   padding:0 15px;
 }
 
 h2{
-  color:#0073e6;
-  margin-bottom:15px;
+  border-left:4px solid #fff;
+  padding-left:10px;
+  margin-bottom:20px;
+  font-size:1.4em;
 }
 
 .cards-container{
@@ -57,17 +65,17 @@ h2{
 
 .card{
   width:300px;
-  background:#fff;
+  background:#1a1a1a;
   border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  box-shadow:0 2px 6px rgba(0,0,0,0.6);
   display:flex;
   flex-direction:column;
-  transition:all 0.3s ease;
+  transition:all 0.25s ease;
 }
 
 .card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 6px 14px rgba(0,0,0,0.2);
+  transform:translateY(-4px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.9);
 }
 
 .card img{
@@ -75,48 +83,84 @@ h2{
   height:160px;
   object-fit:cover;
   border-radius:10px 10px 0 0;
+  filter:grayscale(100%);
 }
 
 .card h3{
-  font-size:1.1em;
-  margin:10px;
+  font-size:1.05em;
+  margin:12px;
 }
 
 .card p{
-  font-size:0.95em;
-  margin:0 10px 10px 10px;
+  font-size:0.9em;
+  margin:0 12px 12px 12px;
+  color:#ccc;
 }
 
 .card a{
-  margin:10px;
+  margin:12px;
   align-self:flex-start;
-  background:#0073e6;
-  color:#fff;
+  background:#fff;
+  color:#000;
   text-decoration:none;
-  padding:6px 10px;
-  border-radius:5px;
-  font-size:0.9em;
+  padding:6px 12px;
+  border-radius:4px;
+  font-size:0.85em;
+  font-weight:bold;
 }
 
-.card a:hover{background:#005bb5}
+.card a:hover{
+  background:#ddd;
+}
+
+.back-top{
+  text-align:center;
+  margin:60px 0;
+}
+
+.back-top a{
+  color:#fff;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.back-top a:hover{
+  text-decoration:underline;
+}
+
+footer{
+  background:#000;
+  border-top:1px solid #222;
+  padding:30px 15px;
+  text-align:center;
+  font-size:0.9em;
+  color:#aaa;
+}
 </style>
 </head>
 
-<body>
+<body id="top">
 
 <header>
   <h1>ForFun81 – News Aggregator</h1>
   <nav>
     <a href="#games">Games</a>
+    <a href="#movies">Movie News</a>
     <a href="#tech">Tech</a>
     <a href="#crypto">Crypto</a>
     <a href="#various">Various</a>
+    <a href="#impressum">Impressum</a>
   </nav>
 </header>
 
 <section id="games">
 <h2>🎮 Video Games</h2>
 <div class="cards-container" id="games-cards">Loading…</div>
+</section>
+
+<section id="movies">
+<h2>🎬 Movie News</h2>
+<div class="cards-container" id="movies-cards">Loading…</div>
 </section>
 
 <section id="tech">
@@ -130,9 +174,30 @@ h2{
 </section>
 
 <section id="various">
-<h2>📰 Various </h2>
+<h2>📰 Various</h2>
 <div class="cards-container" id="various-cards">Loading…</div>
 </section>
+
+<div class="back-top">
+  <a href="#top">⬆ Back to top</a>
+</div>
+
+<section id="impressum">
+<h2>Impressum</h2>
+<p>
+ForFun81 News Aggregator<br>
+Private non-commercial project<br>
+Germany
+</p>
+<p>
+All content belongs to the respective owners.<br>
+This website aggregates publicly available RSS feeds.
+</p>
+</section>
+
+<footer>
+© 2026 ForFun81 · Games · Movies · Tech · Crypto
+</footer>
 
 <script>
 const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
@@ -140,6 +205,7 @@ const MAX_ITEMS = 10;
 
 const FEEDS = {
   games: ['https://www.gamesradar.com/feeds.xml'],
+  movies: ['https://www.hollywood.com/feed'],
   tech: ['https://www.tomshardware.com/feeds.xml'],
   crypto: [
     'https://cointelegraph.com/rss',
@@ -157,9 +223,9 @@ function loadFeed(category, urls){
       fetch(RSS2JSON + encodeURIComponent(url))
         .then(res => res.json())
         .then(data => data.items || [])
-        .catch(() => [])
+        .catch(()=>[])
     )
-  ).then(results => {
+  ).then(results=>{
     const items = results.flat()
       .sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate))
       .slice(0, MAX_ITEMS);
