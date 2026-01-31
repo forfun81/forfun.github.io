@@ -74,37 +74,17 @@ h2 {
     font-size: 0.95em;
     color: #333;
 }
-/* Overlay */
-#overlay {
-    display: none;
-    position: fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-}
-#overlay iframe {
-    width: 90%;
-    height: 80%;
-    border: none;
-    border-radius: 8px;
-    background: #fff;
-}
-#overlay button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    padding: 10px 15px;
+.card a.read-more {
+    display: inline-block;
+    margin: 0 10px 10px 10px;
+    padding: 5px 8px;
     background: #0073e6;
     color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
 }
-#overlay button:hover { background: #005bb5; }
+.card a.read-more:hover { background: #005bb5; }
 </style>
 </head>
 <body>
@@ -140,23 +120,20 @@ h2 {
 <div class="cards-container" id="crypto-cards">Loading...</div>
 </section>
 
-<!-- Overlay for full article -->
-<div id="overlay">
-    <button onclick="closeOverlay()">Close</button>
-    <iframe id="overlay-iframe" src=""></iframe>
-</div>
-
 <script>
 const FEEDS = {
-    games: 'https://www.ign.com/articles?format=rss',
-    movies: 'https://www.rottentomatoes.com/feed/news',
-    tech: 'https://www.techradar.com/rss',
-    crypto: 'https://cointelegraph.com/rss'
+    games: ['https://www.ign.com/articles?format=rss'],
+    movies: ['https://www.rottentomatoes.com/feed/news'],
+    tech: ['https://www.techradar.com/rss'],
+    crypto: [
+        'https://cointelegraph.com/rss',
+        'https://www.coindesk.com/tag/rss'
+    ]
 };
 
-const CACHE_TIME = 30*60*1000;
+const CACHE_TIME = 30*60*1000; // 30 мин cache
 
-function fetchFeed(category, rssURL) {
+function fetchFeed(category, rssURLs) {
     const CACHE_KEY = category + '_cache';
     const cached = localStorage.getItem(CACHE_KEY);
     if(cached) {
@@ -167,10 +144,15 @@ function fetchFeed(category, rssURL) {
         }
     }
 
-    fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssURL)}`)
-    .then(res => res.json())
-    .then(data => {
-        const items = data.items.slice(0,10);
+    // Fetch all feeds and combine
+    Promise.all(rssURLs.map(url => 
+        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`)
+        .then(res => res.json())
+        .then(data => data.items.slice(0,10))
+        .catch(()=>[])
+    ))
+    .then(results => {
+        const items = results.flat().sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate));
         localStorage.setItem(CACHE_KEY, JSON.stringify({time:new Date().getTime(), items: items}));
         renderCards(category, items);
     })
@@ -191,22 +173,10 @@ function renderCards(category, items) {
             ${imgSrc ? `<img src="${imgSrc}" alt="${item.title}">` : ''}
             <h3>${item.title}</h3>
             <p>${item.description ? item.description.slice(0,120) + '...' : ''}</p>
+            <a href="${item.link}" class="read-more" target="_blank">Read More</a>
         `;
-        card.addEventListener('click', ()=>{
-            openOverlay(item.link);
-        });
         container.appendChild(card);
     });
-}
-
-function openOverlay(url) {
-    document.getElementById('overlay-iframe').src = url;
-    document.getElementById('overlay').style.display = 'flex';
-}
-
-function closeOverlay() {
-    document.getElementById('overlay').style.display = 'none';
-    document.getElementById('overlay-iframe').src = '';
 }
 
 // Load all feeds
@@ -214,7 +184,7 @@ for(let category in FEEDS){
     fetchFeed(category, FEEDS[category]);
 }
 
-// Auto refresh
+// Auto refresh every 30 min
 setInterval(()=>{
     for(let category in FEEDS){
         localStorage.removeItem(category + '_cache');
