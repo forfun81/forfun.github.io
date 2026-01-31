@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ForFun81 – News Aggregator</title>
+<meta name="description" content="Aggregated news for games, movies, tech, crypto, and various topics. Stay updated with the latest headlines.">
+<meta name="google-site-verification" content="zaFjkdmT2xTeCtDZbR1wla9ZcUco5Wb7lR14xD1lQBk">
 
 <style>
 html { scroll-behavior: smooth; }
@@ -263,10 +265,10 @@ const FEEDS={
 
 let refreshTimer = null;
 
-// Вчитување на feed
+// Load individual feed
 function loadFeed(cat, urls){
   const container=document.getElementById(cat+'-cards');
-  container.innerHTML=''; // auto-cleanup
+  container.innerHTML='';
   urls.forEach(url=>{
     fetch(RSS2JSON + encodeURIComponent(url))
     .then(res=>res.json())
@@ -289,29 +291,27 @@ function loadFeed(cat, urls){
   });
 }
 
-// Вчитување на сите секции
+// Load all feeds
 function loadAllFeeds(){
   Object.keys(FEEDS).forEach(k=>loadFeed(k,FEEDS[k]));
-  // Ажурирање на индикаторот
   const now = new Date();
   document.getElementById('refreshStatus').textContent = `Last refresh: ${now.toLocaleTimeString()}`;
 }
 
-// Стартер за авто-refresh
+// Auto-refresh
 function startAutoRefresh(interval){
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(loadAllFeeds, interval);
 }
 
-// Прво вчитување
+// Initial load
 loadAllFeeds();
-startAutoRefresh(300000); // default 5 мин
+startAutoRefresh(300000); // default 5 min
 
-// Контрол за dropdown
 document.getElementById('refreshSelect').addEventListener('change', function(){
   const interval = parseInt(this.value);
   startAutoRefresh(interval);
-  loadAllFeeds(); // refresh веднаш при промена
+  loadAllFeeds();
 });
 </script>
 
