@@ -4,193 +4,187 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ForFun81 News Aggregator</title>
+
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f0f2f5;
-    margin: 0;
-    color: #333;
+body{
+  font-family: Arial, sans-serif;
+  background:#f0f2f5;
+  margin:0;
+  color:#333;
 }
-header {
-    background: linear-gradient(90deg,#0073e6,#00aaff);
-    color: #fff;
-    padding: 10px;
-    text-align: center;
+
+header{
+  background:linear-gradient(90deg,#0073e6,#00aaff);
+  color:#fff;
+  padding:12px;
+  text-align:center;
 }
-header h1 {
-    margin: 0;
-    font-size: 1.5em;
+
+header h1{
+  margin:0;
+  font-size:1.6em;
 }
-nav {
-    text-align: center;
-    margin: 10px 0;
+
+nav{
+  margin-top:8px;
 }
-nav a {
-    margin: 0 15px;
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
+
+nav a{
+  color:#fff;
+  margin:0 12px;
+  text-decoration:none;
+  font-weight:bold;
 }
-nav a:hover { color:#ffcc00; }
-section {
-    max-width: 950px;
-    margin: 20px auto;
-    padding: 0 10px;
+
+nav a:hover{color:#ffcc00}
+
+section{
+  max-width:1000px;
+  margin:30px auto;
+  padding:0 15px;
 }
-h2 {
-    color: #0073e6;
-    margin-bottom: 10px;
+
+h2{
+  color:#0073e6;
+  margin-bottom:15px;
 }
-.cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+
+.cards-container{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
 }
-.card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    width: 280px;
-    padding: 0;
-    background: #fff;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
+
+.card{
+  width:300px;
+  background:#fff;
+  border-radius:10px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  display:flex;
+  flex-direction:column;
+  transition:all 0.3s ease;
 }
-.card:hover { box-shadow:0 5px 15px rgba(0,0,0,0.2); }
-.card img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px 8px 0 0;
+
+.card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 14px rgba(0,0,0,0.2);
 }
-.card h3 {
-    margin: 10px;
-    font-size: 1.1em;
+
+.card img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  border-radius:10px 10px 0 0;
 }
-.card p {
-    margin: 0 10px 10px 10px;
-    font-size: 0.95em;
-    color: #333;
+
+.card h3{
+  font-size:1.1em;
+  margin:10px;
 }
-.card a.read-more {
-    display: inline-block;
-    margin: 0 10px 10px 10px;
-    padding: 5px 8px;
-    background: #0073e6;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.9em;
+
+.card p{
+  font-size:0.95em;
+  margin:0 10px 10px 10px;
 }
-.card a.read-more:hover { background: #005bb5; }
+
+.card a{
+  margin:10px;
+  align-self:flex-start;
+  background:#0073e6;
+  color:#fff;
+  text-decoration:none;
+  padding:6px 10px;
+  border-radius:5px;
+  font-size:0.9em;
+}
+
+.card a:hover{background:#005bb5}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>ForFun81 News Aggregator</h1>
+  <h1>ForFun81 – News Aggregator</h1>
+  <nav>
+    <a href="#games">Games</a>
+    <a href="#tech">Tech</a>
+    <a href="#crypto">Crypto</a>
+    <a href="#various">Various</a>
+  </nav>
 </header>
 
-<nav>
-<a href="#games">Video Games</a>
-<a href="#movies">Movies</a>
-<a href="#tech">Computer Tech</a>
-<a href="#crypto">Crypto News</a>
-</nav>
-
 <section id="games">
-<h2>Video Games</h2>
-<div class="cards-container" id="games-cards">Loading...</div>
-</section>
-
-<section id="movies">
-<h2>Movies</h2>
-<div class="cards-container" id="movies-cards">Loading...</div>
+<h2>🎮 Video Games</h2>
+<div class="cards-container" id="games-cards">Loading…</div>
 </section>
 
 <section id="tech">
-<h2>Computer Tech</h2>
-<div class="cards-container" id="tech-cards">Loading...</div>
+<h2>💻 Computer Tech</h2>
+<div class="cards-container" id="tech-cards">Loading…</div>
 </section>
 
 <section id="crypto">
-<h2>Crypto News</h2>
-<div class="cards-container" id="crypto-cards">Loading...</div>
+<h2>💰 Crypto News</h2>
+<div class="cards-container" id="crypto-cards">Loading…</div>
+</section>
+
+<section id="various">
+<h2>📰 Various (Gizmodo)</h2>
+<div class="cards-container" id="various-cards">Loading…</div>
 </section>
 
 <script>
+const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
+const MAX_ITEMS = 10;
+
 const FEEDS = {
-    games: ['https://www.ign.com/articles?format=rss'],
-    movies: ['https://www.rottentomatoes.com/feed/news'],
-    tech: ['https://www.techradar.com/rss'],
-    crypto: [
-        'https://cointelegraph.com/rss',
-        'https://www.coindesk.com/tag/rss'
-    ]
+  games: ['https://www.gamesradar.com/feeds.xml'],
+  tech: ['https://www.tomshardware.com/feeds.xml'],
+  crypto: [
+    'https://cointelegraph.com/rss',
+    'https://www.coindesk.com/tag/rss'
+  ],
+  various: ['https://gizmodo.com/feed']
 };
 
-const CACHE_TIME = 30*60*1000; // 30 мин cache
+function loadFeed(category, urls){
+  const container = document.getElementById(category + '-cards');
+  container.innerHTML = '';
 
-function fetchFeed(category, rssURLs) {
-    const CACHE_KEY = category + '_cache';
-    const cached = localStorage.getItem(CACHE_KEY);
-    if(cached) {
-        const obj = JSON.parse(cached);
-        if(new Date().getTime() - obj.time < CACHE_TIME) {
-            renderCards(category, obj.items);
-            return;
-        }
-    }
-
-    // Fetch all feeds and combine
-    Promise.all(rssURLs.map(url => 
-        fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`)
+  Promise.all(
+    urls.map(url =>
+      fetch(RSS2JSON + encodeURIComponent(url))
         .then(res => res.json())
-        .then(data => data.items.slice(0,10))
-        .catch(()=>[])
-    ))
-    .then(results => {
-        const items = results.flat().sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate));
-        localStorage.setItem(CACHE_KEY, JSON.stringify({time:new Date().getTime(), items: items}));
-        renderCards(category, items);
-    })
-    .catch(err => {
-        console.error(err);
-        document.getElementById(category + '-cards').innerHTML = 'Could not load feed.';
-    });
-}
+        .then(data => data.items || [])
+        .catch(() => [])
+    )
+  ).then(results => {
+    const items = results.flat()
+      .sort((a,b)=> new Date(b.pubDate) - new Date(a.pubDate))
+      .slice(0, MAX_ITEMS);
 
-function renderCards(category, items) {
-    const container = document.getElementById(category + '-cards');
-    container.innerHTML = '';
-    items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        const imgSrc = item.enclosure?.link || item.thumbnail || '';
-        card.innerHTML = `
-            ${imgSrc ? `<img src="${imgSrc}" alt="${item.title}">` : ''}
-            <h3>${item.title}</h3>
-            <p>${item.description ? item.description.slice(0,120) + '...' : ''}</p>
-            <a href="${item.link}" class="read-more" target="_blank">Read More</a>
-        `;
-        container.appendChild(card);
-    });
-}
-
-// Load all feeds
-for(let category in FEEDS){
-    fetchFeed(category, FEEDS[category]);
-}
-
-// Auto refresh every 30 min
-setInterval(()=>{
-    for(let category in FEEDS){
-        localStorage.removeItem(category + '_cache');
-        fetchFeed(category, FEEDS[category]);
+    if(items.length === 0){
+      container.innerHTML = '<p>No articles available.</p>';
+      return;
     }
-}, CACHE_TIME);
+
+    items.forEach(item=>{
+      const img = item.enclosure?.link || item.thumbnail || '';
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        ${img ? `<img src="${img}">` : ''}
+        <h3>${item.title}</h3>
+        <p>${item.description ? item.description.replace(/<[^>]*>/g,'').slice(0,140)+'...' : ''}</p>
+        <a href="${item.link}" target="_blank">Read More</a>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+Object.keys(FEEDS).forEach(cat => loadFeed(cat, FEEDS[cat]));
 </script>
 
 </body>
